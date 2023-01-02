@@ -1,0 +1,124 @@
+include pf:plyfield
+
+//
+// OOOOOO   OOOO                      OOOO    OO            OOOO        OO
+// OO   OO    OO    OOOOOO OO   OO   OO             OOOOO     OO        OO
+// OO   OO    OO   OO   OO OO   OO OOOOOOO  OOOO   OO   OO    OO    OOOOOO
+// OOOOOO     OO   OO   OO OO   OO   OO       OO   OOOOOOO    OO   OO   OO
+// OO         OO   OO   OO  OOOOOO   OO       OO   OO         OO   OO   OO
+// OO      OOOOOOO  OOOOOO      OO   OO    OOOOOOO  OOOOO  OOOOOOO  OOOOOO
+//                         OOOOOO
+
+byte xposition, yposition
+byte xpf, ypf
+byte numberOfPlayfield
+word screen
+word screen2
+word w_index
+byte value
+
+// word key_screen = @key_screen
+// word door_screen = @door_screen
+
+// byte countOfEnterableFloors = @countOfEnterableFloors
+
+// byte dude_start_xpos = @dude_start_xpos
+// byte dude_start_ypos = @dude_start_ypos
+
+// 40 64 88 112 136 160
+// Ypos im Playfield so umrechnen, das Figuren auf der richtigen Linie stehen
+byte array @ypf_to_enemy_ypos[1] = [
+40,40,40,40,40,40,40, // line 0
+64,64,64,             // line 1
+88,88,88,             // line 2
+112,112,112,          // line 3
+136,136,136,          // line 4
+160,160,160,160       // line 5
+]
+
+byte array ypf_to_enemy_ypos[1] = @ypf_to_enemy_ypos
+
+byte enemy_xpos
+byte enemy_ypos
+
+
+procedure @load_background(numberOfPlayfield)
+begin
+//  playfieldFilename[playfieldFilenameNumPos] := charOfPlayfield
+//  @open(1,4,0,adr:playfieldFilename)
+//  @bget(1, game_screen, 6)
+//  @bget(1, game_screen, 960)
+//  @close(1)
+  @huffman_decode(0, game_screen) // Default frame
+
+  // We use a 2 time playfield, the first is the frame
+  // the second is the inner field
+  @huffman_decode(numberOfPlayfield, $b400) // load inner frame
+
+  screen := $b400
+  for ypf:=0 to 19 do
+  begin
+    enemy_ypos := ypf_to_enemy_ypos[ypf]
+
+    for xpf:=0 to 39 do
+    begin
+      enemy_xpos := xpf*4
+
+      value := @mem[screen] // run through inner frame
+      if value == THE_DUDE then
+      begin
+//        dude_start_xpos := enemy_xpos
+//        dude_start_ypos := ypf*8
+        @mem[screen] := 0
+      end
+
+      else if value == KEY then
+      begin
+//        key_screen := game_screen + ypf * 40 + xpf - 40
+        @mem[screen] := 0
+      end
+
+      else if value == DOOR then
+      begin
+//        door_screen := game_screen + ypf * 40 + xpf - 40
+//        @mem[screen-40] := DOOR_CLOSED_1
+//        @mem[screen-39] := DOOR_CLOSED_2
+//        @mem[screen-38] := DOOR_CLOSED_3
+//        @mem[screen] := DOOR_CLOSED_4
+//        @mem[screen+1] := DOOR_CLOSED_5
+//        @mem[screen+2] := DOOR_CLOSED_6
+        @mem[screen] := 0
+      end
+
+      // TODO: set Skeleton etc at a position from screen
+      else if value >= E_CAT and value <= E_SKELETON then
+      begin
+//        @add_enemy(enemy_xpos, enemy_ypos, value)
+        @mem[screen] := 0
+      end
+
+      else if value > 96 and value < 128 then
+      begin
+        @mem[screen] := 0
+      end
+
+      screen := screen + 1
+    end
+  end
+  // Copy inner frame playfield into the global playfield
+
+  screen2 := $b400
+  screen := game_screen
+
+  for w_index:=0 to 879 do // run through 22 lines
+  begin
+    value := @mem[screen2 + w_index]
+    if value != 0 then
+    begin
+      @mem[screen + w_index] := value
+    end
+  end
+
+  @clearbyte($b400, 1024)
+
+end

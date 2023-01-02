@@ -1,0 +1,38 @@
+program unpack
+
+lomem=$4000,runad
+
+byte CHBAS=@
+byte array color[4]=708
+
+byte i
+
+begin
+  @graphics(12+16)
+  chbas := $b8
+  color[0]:= $82
+  color[1]:= $86
+  color[2]:= $8A
+
+  for i:=1 to 11 do
+  begin
+    @load_background(i)
+    @waitline(112)
+  end
+
+  @getchar()
+end
+
+include 'FAST_SCREEN_OUTPUT.INC'
+include 'SCREEN_OUTPUT.INC'
+include 'PRINTF.INC'
+include 'GRAPHICS.INC'
+include 'FILLBYTE.INC'
+include 'GETCHAR.INC'
+include 'BACKCOLORLINE.INC'
+include 'BASIC.INC'
+
+include 'font.INC'
+include 'PLYFIELD.INC'              // the playfield
+include 'huffman-decode.INC'
+include 'COMPRESSED-PLAYFIELDS.INC' // Die Playfields

@@ -1,0 +1,7 @@
+.idea
+.settings
+.project
+.classpath
+packer/target
+*.65o
+configPom/*.epf

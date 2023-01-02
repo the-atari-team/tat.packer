@@ -1,0 +1,20 @@
+const game_screen = $bba0 // 960 bytes
+
+// Values in playfield for positioning
+const THE_DUDE=127
+const KEY=126
+const DOOR=125
+const SAND_CLOCK=124
+const SHIELD=123
+const GEMS=122
+const STOP_WATCH=121
+
+const E_SKELETON=119
+const E_ARCHER=118
+const E_DARK_KNIGHT=117
+const E_GHOST=116
+const E_VAMPIRE=115
+const E_WIZARD=114
+const E_WERWOLF=113
+const E_CAT=112
+
